@@ -1,6 +1,9 @@
 package dml
 
-import "io/ioutil"
+import (
+	"io/ioutil"
+	"strings"
+)
 
 var defaultCSS = `
 	h1 {
@@ -25,6 +28,15 @@ var defaultCSS = `
 		white-space: pre-wrap;
 	}`
 
+func LoadDefaultCSS(file string) bool {
+	text, err := ioutil.ReadFile("default.css")
+	if err != nil {
+		return false
+	}
+	defaultCSS = string(text)
+	return true
+}
+
 /*
  * Swaps the DML tags in the given input for appropriate HTML tags in the return value.
  * Takes:
@@ -33,8 +45,16 @@ var defaultCSS = `
  *      the given text with all special characters escaped and the DML tags swapped for the appropriate HTML tags
  */
 func ParseDoc(text string) string {
-        return string(text)
-};
+	text = strings.Replace(text, "<center>", "<p style=\"text-align:center\">", -1)
+	text = strings.Replace(text, "</center>", "</p>", -1)
+	text = strings.Replace(text, "<right>", "<p style=\"text-align:right\">", -1)
+	text = strings.Replace(text, "</right>", "</p>", -1)
+	text = strings.Replace(text, "<left>", "<p style=\"text-align:left\">", -1)
+	text = strings.Replace(text, "</left>", "</p>", -1)
+	text = strings.Replace(text, "<justify>", "<p style=\"text-align:justify\">", -1)
+	text = strings.Replace(text, "</justify>", "</p>", -1)
+	return string(text)
+}
 
 /*
  * Swaps the DML tags in the given input for appropriate HTML tags and embed the new HTML in HTML tags as the return value.
