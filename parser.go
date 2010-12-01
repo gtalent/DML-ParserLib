@@ -37,6 +37,18 @@ func LoadDefaultCSS(file string) bool {
 	return true
 }
 
+func fixAlignment(text string) string {
+	text = strings.Replace(text, "<center>", "<pre style=\"text-align:center\">", -1)
+	text = strings.Replace(text, "</center>", "</pre>", -1)
+	text = strings.Replace(text, "<right>", "<pre style=\"text-align:right\">", -1)
+	text = strings.Replace(text, "</right>", "</pre>", -1)
+	text = strings.Replace(text, "<left>", "<pre style=\"text-align:left\">", -1)
+	text = strings.Replace(text, "</left>", "</pre>", -1)
+	text = strings.Replace(text, "<justify>", "<pre style=\"text-align:justify\">", -1)
+	text = strings.Replace(text, "</justify>", "</pre>", -1)
+	return string(text)
+}
+
 /*
  * Swaps the DML tags in the given input for appropriate HTML tags in the return value.
  * Takes:
@@ -45,15 +57,8 @@ func LoadDefaultCSS(file string) bool {
  *      the given text with all special characters escaped and the DML tags swapped for the appropriate HTML tags
  */
 func ParseDoc(text string) string {
-	text = strings.Replace(text, "<center>", "<p style=\"text-align:center\">", -1)
-	text = strings.Replace(text, "</center>", "</p>", -1)
-	text = strings.Replace(text, "<right>", "<p style=\"text-align:right\">", -1)
-	text = strings.Replace(text, "</right>", "</p>", -1)
-	text = strings.Replace(text, "<left>", "<p style=\"text-align:left\">", -1)
-	text = strings.Replace(text, "</left>", "</p>", -1)
-	text = strings.Replace(text, "<justify>", "<p style=\"text-align:justify\">", -1)
-	text = strings.Replace(text, "</justify>", "</p>", -1)
-	return string(text)
+	text = fixAlignment(text)
+	return text
 }
 
 /*
