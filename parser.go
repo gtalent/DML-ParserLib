@@ -6,35 +6,49 @@ import (
 )
 
 var defaultCSS = `
-	h1 {
-		text-align:center
-	}
-	h2 {
-		text-align:center
-	}
-	h3 {
-		text-align:center
-	}
-	h4 {
-		text-align:center
-	}
-	h5 {
-		text-align:center
-	}
-	h6 {
-		text-align:center
-	}
 	pre {
 		white-space: pre-wrap;
 	}`
+var defaultBottom = "</body></html>"
 
-func LoadDefaultCSS(file string) bool {
+/*
+ * Returns the default top of the document.
+ * Takes:
+ *	css - the CSS settings for this document
+ * Returns:
+ *	the default top of the document
+ */
+func defaultTop(title, css string) string {
+	return "<html><head><style type=\"text/css\">" + css + "</style><link rel=\"stylesheet\" type=\"text/css\" href=\"default.css\" /><title>" + title + "</title></head><body>"
+}
+
+/*
+ * Gets the default CSS for the documents.
+ * Returns:
+ * 	the default CSS for the documents.
+ */
+func getCSS() string {
 	text, err := ioutil.ReadFile("default.css")
 	if err != nil {
-		return false
+		return defaultCSS
 	}
-	defaultCSS = string(text)
-	return true
+	return string(text)
+}
+
+func getTop(title, css string) string {
+	file, err := ioutil.ReadFile("top.html")
+	if err != nil {
+		return defaultTop(title, css)
+	}
+	return string(file)
+}
+
+func getBottom() string {
+	file, err := ioutil.ReadFile("bottom.html")
+	if err != nil {
+		return defaultBottom
+	}
+	return string(file)
 }
 
 func fixAlignment(text string) string {
@@ -57,7 +71,7 @@ func fixAlignment(text string) string {
  *      the given text with all special characters escaped and the DML tags swapped for the appropriate HTML tags
  */
 func ParseDoc(text string) string {
-	text = fixAlignment(text)
+	text = "<pre>" + fixAlignment(text) + "</pre>"
 	return text
 }
 
@@ -69,14 +83,17 @@ func ParseDoc(text string) string {
  *      the given text with all special characters escaped and the DML tags swapped for the appropriate HTML tags
  */
 func ToHTML(title, input string) string {
-	file, err := ioutil.ReadFile("default.css")
-	var css string
-	if err != nil {
-		css = defaultCSS
-	} else {
-		css = string(file)
-	}
-	top := "<html><head><style type=\"text/css\">" + css + "</style><link rel=\"stylesheet\" type=\"text/css\" href=\"default.css\" /><title>" + title + "</title></head><body>"
-	bottom := "</body></html>"
-	return top + ParseDoc(input) + bottom
+	return getTop(title, getCSS()) + ParseDoc(input) + getBottom()
+}
+
+/*
+ * Swaps the DML tags in the given input for appropriate HTML tags and embed the new HTML in HTML tags as the return value.
+ * Takes:
+ *      doc - the text of the document to convert
+ *	css - the text of css document
+ * Returns:
+ *      the given text with all special characters escaped and the DML tags swapped for the appropriate HTML tags
+ */
+func ToHTMLCSS(title, input, css string) string {
+	return getTop(title, css)+ ParseDoc(input) + getBottom()
 }
