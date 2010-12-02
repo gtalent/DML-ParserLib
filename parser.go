@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+var cssPath = "default.css"
 var defaultCSS = `
 	pre {
 		white-space: pre-wrap;
@@ -19,7 +20,7 @@ var defaultBottom = "</body></html>"
  *	the default top of the document
  */
 func defaultTop(title, css string) string {
-	return "<html><head><style type=\"text/css\">" + css + "</style><link rel=\"stylesheet\" type=\"text/css\" href=\"default.css\" /><title>" + title + "</title></head><body>"
+	return "<html><head><style type=\"text/css\">" + css + "</style><title>" + title + "</title></head><body>"
 }
 
 /*
@@ -28,7 +29,7 @@ func defaultTop(title, css string) string {
  * 	the default CSS for the documents.
  */
 func getCSS() string {
-	text, err := ioutil.ReadFile("default.css")
+	text, err := ioutil.ReadFile(cssPath)
 	if err != nil {
 		return defaultCSS
 	}
@@ -61,6 +62,11 @@ func fixAlignment(text string) string {
 	text = strings.Replace(text, "<justify>", "<pre style=\"text-align:justify\">", -1)
 	text = strings.Replace(text, "</justify>", "</pre>", -1)
 	return string(text)
+}
+
+//Sets the path to the default CSS file
+func SetDefaultCSSPath(path string) {
+	cssPath = path
 }
 
 /*
